@@ -470,6 +470,33 @@ function toAssistantUIItem(specifier: string): string | null {
     : name;
 }
 
+async function loadModuleParsers() {
+  const { default: jscodeshift } = await import("jscodeshift");
+  return {
+    ts: jscodeshift.withParser("ts"),
+    tsx: jscodeshift.withParser("tsx"),
+  };
+}
+
+type ModuleParser = Awaited<ReturnType<typeof loadModuleParsers>>["ts"];
+
+/** Visits the source literal of every import and re-export in a parsed file. */
+function forEachModuleSource(
+  j: ModuleParser,
+  root: ReturnType<ModuleParser>,
+  visit: (source: {
+    value?: unknown;
+    start?: number | null;
+    end?: number | null;
+  }) => void,
+): void {
+  root.find(j.ImportDeclaration).forEach(({ node }) => visit(node.source));
+  root
+    .find(j.ExportNamedDeclaration)
+    .forEach(({ node }) => node.source && visit(node.source));
+  root.find(j.ExportAllDeclaration).forEach(({ node }) => visit(node.source));
+}
+
 /**
  * Example snapshots are downloaded at a release tag while the shadcn registry
  * is live, so a snapshot may import components at the legacy flat path
@@ -518,11 +545,7 @@ export async function reconcileAssistantUIImportLayout(
   }
   if (installedByName.size === 0) return;
 
-  const { default: jscodeshift } = await import("jscodeshift");
-  const parsers = {
-    ts: jscodeshift.withParser("ts"),
-    tsx: jscodeshift.withParser("tsx"),
-  };
+  const parsers = await loadModuleParsers();
 
   for (const { fullPath, content } of readProjectFiles("**/*.{ts,tsx}", {
     cwd: projectDir,
@@ -571,15 +594,7 @@ export async function reconcileAssistantUIImportLayout(
     } catch {
       continue;
     }
-    root
-      .find(j.ImportDeclaration)
-      .forEach(({ node }) => collectReplacement(node.source));
-    root
-      .find(j.ExportNamedDeclaration)
-      .forEach(({ node }) => node.source && collectReplacement(node.source));
-    root
-      .find(j.ExportAllDeclaration)
-      .forEach(({ node }) => collectReplacement(node.source));
+    forEachModuleSource(j, root, collectReplacement);
 
     let next = content;
     for (const replacement of replacements.sort((a, b) => b.start - a.start)) {
