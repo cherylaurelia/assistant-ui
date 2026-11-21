@@ -1073,7 +1073,6 @@ export const registry: RegistryItem[] = [
         type: "registry:lib",
         path: "lib/utils.ts",
         sourcePath: "../../packages/ui/src/lib/utils.ts",
-        target: "lib/utils.ts",
       },
     ],
     dependencies: ["cn"],

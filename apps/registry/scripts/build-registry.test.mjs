@@ -2682,6 +2682,21 @@ describe("built registry artifacts", { concurrency: false }, () => {
     }
   });
 
+  test("utils installs under the project's lib alias, not a fixed path", async () => {
+    for (const prefix of ["", "base/"]) {
+      const utils = JSON.parse(
+        await readFile(`dist/${prefix}utils.json`, "utf8"),
+      );
+      // A fixed target is written relative to the project root, so a project
+      // whose @/* path points at ./app (React Router) gets lib/utils.ts outside
+      // it and every "@/lib/utils" import fails to resolve.
+      assert.deepEqual(
+        utils.files.map(({ path, target }) => ({ path, target })),
+        [{ path: "lib/utils.ts", target: undefined }],
+      );
+    }
+  });
+
   test("native registry build emits the React Native kit", async () => {
     const [registryContent, threadContent] = await Promise.all([
       readFile("dist/native/registry.json", "utf8"),

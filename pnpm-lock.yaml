@@ -3256,16 +3256,16 @@ importers:
         version: link:../../packages/ui
       '@openuidev/assistant-ui':
         specifier: ^0.2.0
-        version: 0.2.0(ad0726034f51990aa0e54aba5348620f)
+        version: 0.2.0(4cdc1526686769a7cff885629baef49e)
       '@openuidev/react-headless':
         specifier: ^0.18.1
-        version: 0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
+        version: 0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1))
       '@openuidev/react-lang':
         specifier: ^1.0.1
         version: 1.0.1(@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
       '@openuidev/react-ui':
         specifier: ^0.18.1
-        version: 0.18.1(@openuidev/react-headless@0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@openuidev/react-lang@1.0.1(@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
+        version: 0.18.1(@openuidev/react-headless@0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)))(@openuidev/react-lang@1.0.1(@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(zod@4.6.7)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1))
       ai:
         specifier: ^7.0.153
         version: 7.0.153(zod@4.6.7)
@@ -3290,9 +3290,6 @@ importers:
       zod:
         specifier: ^4.6.7
         version: 4.6.7
-      zustand:
-        specifier: ^5.0.16
-        version: 5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
     devDependencies:
       '@assistant-ui/x-buildutils':
         specifier: workspace:*
@@ -24511,6 +24508,21 @@ packages:
       react:
         optional: true
 
+  zustand@4.5.7:
+    resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0.6'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+
   zustand@5.0.16:
     resolution: {integrity: sha512-Uv7e327ihlCfayfja3hDc0M64Upev1LWBKpRobdK4NyovDDPeeX4imWXc/wzC1yc6fkYPoAY/ncKVPAs2jrtQw==}
     engines: {node: '>=12.20.0'}
@@ -29523,16 +29535,16 @@ snapshots:
 
   '@opentelemetry/semantic-conventions@1.43.0': {}
 
-  '@openuidev/assistant-ui@0.2.0(ad0726034f51990aa0e54aba5348620f)':
+  '@openuidev/assistant-ui@0.2.0(4cdc1526686769a7cff885629baef49e)':
     dependencies:
       '@assistant-ui/react': link:packages/react
-      '@openuidev/react-headless': 0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
+      '@openuidev/react-headless': 0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1))
       '@openuidev/react-lang': 1.0.1(@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
-      '@openuidev/react-ui': 0.18.1(@openuidev/react-headless@0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@openuidev/react-lang@1.0.1(@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
+      '@openuidev/react-ui': 0.18.1(@openuidev/react-headless@0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)))(@openuidev/react-lang@1.0.1(@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(zod@4.6.7)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1))
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
       zod: 4.6.7
-      zustand: 5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
+      zustand: 4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)
     optionalDependencies:
       ai: 7.0.153(zod@4.6.7)
 
@@ -29554,12 +29566,12 @@ snapshots:
 
   '@openuidev/observability@0.0.4': {}
 
-  '@openuidev/react-headless@0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))':
+  '@openuidev/react-headless@0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1))':
     dependencies:
       '@ag-ui/core': 0.0.53
       '@openuidev/observability': 0.0.4
       react: 19.3.1
-      zustand: 5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
+      zustand: 4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)
     optionalDependencies:
       ai: 7.0.153(zod@4.6.7)
 
@@ -29574,10 +29586,10 @@ snapshots:
       '@modelcontextprotocol/sdk': 1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7)
       react-dom: 19.3.1(react@19.3.1)
 
-  '@openuidev/react-ui@0.18.1(@openuidev/react-headless@0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@openuidev/react-lang@1.0.1(@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))':
+  '@openuidev/react-ui@0.18.1(@openuidev/react-headless@0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)))(@openuidev/react-lang@1.0.1(@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(zod@4.6.7)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1))':
     dependencies:
       '@floating-ui/react-dom': 2.1.9(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@openuidev/react-headless': 0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
+      '@openuidev/react-headless': 0.18.1(ai@7.0.153(zod@4.6.7))(react@19.3.1)(zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1))
       '@openuidev/react-lang': 1.0.1(@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
       '@radix-ui/react-accordion': 1.3.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@radix-ui/react-aspect-ratio': 1.2.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -29615,7 +29627,7 @@ snapshots:
       tiny-invariant: 1.3.3
       unist-util-visit: 5.2.0
       zod: 4.6.7
-      zustand: 5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
+      zustand: 4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
@@ -45075,6 +45087,14 @@ snapshots:
 
   zustand@3.7.2(react@19.3.1):
     optionalDependencies:
+      react: 19.3.1
+
+  zustand@4.5.7(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1):
+    dependencies:
+      use-sync-external-store: 1.7.0(react@19.3.1)
+    optionalDependencies:
+      '@types/react': 19.3.0
+      immer: 11.2.9
       react: 19.3.1
 
   zustand@5.0.16(@types/react@19.3.0)(immer@11.2.9)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)):

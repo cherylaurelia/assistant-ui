@@ -611,6 +611,18 @@ describe("PROJECT_METADATA", () => {
     expect(withLocalComponents.map((e) => e.name)).toEqual(["with-react-ink"]);
   });
 
+  it("every entry that installs registry components ships a components.json", () => {
+    // Without one, `shadcn add --yes` stops at its init prompt and installs
+    // nothing when stdin is not a TTY.
+    const repoRoot = path.resolve(import.meta.dirname, "../../../..");
+    const missing = PROJECT_METADATA.filter(
+      (m) =>
+        !m.hasLocalComponents &&
+        !fs.existsSync(path.join(repoRoot, m.path, "components.json")),
+    ).map((m) => m.name);
+    expect(missing).toEqual([]);
+  });
+
   it("every entry has a path", () => {
     for (const m of PROJECT_METADATA) {
       expect(m.path).toBeTruthy();
