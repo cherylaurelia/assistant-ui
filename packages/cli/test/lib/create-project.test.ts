@@ -859,18 +859,147 @@ describe("installShadcnRegistry behavior", () => {
     expect(result.registryInstallFailure?.retryCommand).not.toMatch(/--yes$/);
   });
 
+  function mockShadcnWrites(files: Record<string, string>) {
+    mocks.spawn.mockImplementationOnce(() => {
+      const ee = new EventEmitter();
+      setTimeout(() => ee.emit("close", 0), 0);
+      return ee;
+    });
+    mocks.spawn.mockImplementationOnce(() => {
+      for (const [file, content] of Object.entries(files)) {
+        writeFile(file, content);
+      }
+      const ee = new EventEmitter();
+      setTimeout(() => ee.emit("close", 0), 0);
+      return ee;
+    });
+  }
+
+  function runInstall() {
+    return transformProject(testDir, {
+      ...defaultOpts,
+      skipInstall: false,
+      hasLocalComponents: false,
+    });
+  }
+
   it("reports no failure when shadcn succeeds", async () => {
+    mockShadcnWrites({
+      "components/ui/button.tsx": "export const Button = () => null;\n",
+    });
     writeJSON("package.json", { name: "test", dependencies: {} });
+    writeJSON("tsconfig.json", {
+      compilerOptions: { paths: { "@/*": ["./*"] } },
+    });
     writeFile(
       "app/page.tsx",
       'import { Button } from "@/components/ui/button";\n',
     );
 
-    const result = await transformProject(testDir, {
-      ...defaultOpts,
-      skipInstall: false,
-      hasLocalComponents: false,
+    const result = await runInstall();
+
+    expect(result.registryInstallFailure).toBeUndefined();
+  });
+
+  it("reports the failure when shadcn exits 0 without writing the components", async () => {
+    writeJSON("package.json", { name: "test", dependencies: {} });
+    writeJSON("tsconfig.json", {
+      compilerOptions: { paths: { "@/*": ["./*"] } },
     });
+    writeFile(
+      "app/page.tsx",
+      'import { Thread } from "@/components/assistant-ui/elements/thread.aui";\n',
+    );
+
+    const result = await runInstall();
+
+    expect(result.registryInstallFailure?.unresolvedImports).toEqual([
+      "@/components/assistant-ui/elements/thread.aui",
+    ]);
+    expect(result.registryInstallFailure?.retryCommand).toContain(
+      "@assistant-ui/thread",
+    );
+  });
+
+  it("resolves imports through the project's @/* path", async () => {
+    mockShadcnWrites({
+      "app/components/ui/button.tsx": "export const Button = () => null;\n",
+      "lib/utils.ts": "export const cn = () => '';\n",
+    });
+    writeJSON("package.json", { name: "test", dependencies: {} });
+    writeJSON("tsconfig.json", {
+      compilerOptions: { paths: { "@/*": ["./app/*"] } },
+    });
+    writeFile(
+      "app/routes/home.tsx",
+      'import { Button } from "@/components/ui/button";\nimport { cn } from "@/lib/utils";\n',
+    );
+
+    const result = await runInstall();
+
+    expect(result.registryInstallFailure?.unresolvedImports).toEqual([
+      "@/lib/utils",
+    ]);
+  });
+
+  it("accepts files with any extension and leaves project imports alone", async () => {
+    mockShadcnWrites({
+      "components/ui/button.tsx": "export const Button = () => null;\n",
+    });
+    writeJSON("package.json", { name: "test", dependencies: {} });
+    writeJSON("tsconfig.json", {
+      compilerOptions: { paths: { "@/*": ["./*"] } },
+    });
+    writeFile("types.d.ts", "export type Id = string;\n");
+    writeFile("lib/utils-server.d.ts", "export const now: number;\n");
+    writeFile("components/card.module.css", ".card {}\n");
+    writeFile("components/legacy.jsx", "export const Legacy = null;\n");
+    writeFile(
+      "app/page.tsx",
+      [
+        'import { Button } from "@/components/ui/button";',
+        'import type { Id } from "@/types";',
+        'import { now } from "@/lib/utils-server";',
+        'import styles from "@/components/card.module.css";',
+        'import { Legacy } from "@/components/legacy";',
+        '// import { Old } from "@/components/ui/old";',
+        "",
+      ].join("\n"),
+    );
+
+    const result = await runInstall();
+
+    expect(result.registryInstallFailure).toBeUndefined();
+  });
+
+  it("skips the check when the project has no tsconfig", async () => {
+    writeJSON("package.json", { name: "test", dependencies: {} });
+    writeFile(
+      "app/page.tsx",
+      'import { Thread } from "@/components/assistant-ui/elements/thread.aui";\n',
+    );
+
+    const result = await runInstall();
+
+    expect(result.registryInstallFailure).toBeUndefined();
+  });
+
+  it("accepts components installed under src/ when @/* points there", async () => {
+    mockShadcnWrites({
+      "src/components/ui/button.tsx": "export const Button = () => null;\n",
+      "src/lib/utils.ts": "export const cn = () => '';\n",
+    });
+    writeJSON("package.json", { name: "test", dependencies: {} });
+    writeJSON("tsconfig.json", {
+      compilerOptions: { paths: { "@/*": ["./src/*"] } },
+    });
+    writeFile(
+      "src/app/page.tsx",
+      'import { Button } from "@/components/ui/button";\nimport { cn } from "@/lib/utils";\nimport "@/app/globals.css";\n',
+    );
+    writeFile("src/app/globals.css", "");
+
+    const result = await runInstall();
 
     expect(result.registryInstallFailure).toBeUndefined();
   });

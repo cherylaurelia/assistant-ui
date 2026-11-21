@@ -813,9 +813,22 @@ export const create = new Command()
         disarmCleanup();
         logger.break();
         logger.error("Project created with missing components.");
+        const failure = transformResult.registryInstallFailure;
+        if (failure.unresolvedImports) {
+          logger.info(
+            "The component install finished, but these imports resolve to no file through the tsconfig @/* path:",
+          );
+          for (const specifier of failure.unresolvedImports) {
+            logger.info(`  ${specifier}`);
+          }
+          const [dlxCmd, dlxArgs] = dlxCommand(pm);
+          logger.info(
+            `If the project has no components.json, create it first with: ${[dlxCmd, ...dlxArgs, SHADCN_PACKAGE, "init"].join(" ")}`,
+          );
+        }
         logger.info("Retry the component install with:");
         logger.info(`  ${cdCommand}`);
-        logger.info(`  ${transformResult.registryInstallFailure.retryCommand}`);
+        logger.info(`  ${failure.retryCommand}`);
         process.exit(1);
       }
 

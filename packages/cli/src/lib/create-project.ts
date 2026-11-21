@@ -223,7 +223,11 @@ export async function scaffoldProject(
 }
 
 export interface TransformResult {
-  registryInstallFailure?: { retryCommand: string };
+  registryInstallFailure?: {
+    retryCommand: string;
+    /** Set when shadcn exited 0 but these registry imports have no file. */
+    unresolvedImports?: string[];
+  };
   registryInstallCommand?: string;
 }
 
@@ -245,10 +249,7 @@ export async function transformProject(
   const pm = opts.packageManager;
   if (opts.skipInstall) {
     if (!components) return {};
-    const [cmd, dlxArgs] = dlxCommand(pm);
-    return {
-      registryInstallCommand: `${cmd} ${[...dlxArgs, SHADCN_PACKAGE, "add", ...components].join(" ")}`,
-    };
+    return { registryInstallCommand: shadcnAddCommand(pm, components) };
   }
 
   logger.step("Installing dependencies...");
@@ -264,8 +265,113 @@ export async function transformProject(
     );
     if (failure) return { registryInstallFailure: failure };
     await reconcileAssistantUIImportLayout(projectDir);
+
+    const unresolvedImports = await findUnresolvedRegistryImports(projectDir);
+    if (unresolvedImports.length > 0) {
+      return {
+        registryInstallFailure: {
+          retryCommand: shadcnAddCommand(pm, components),
+          unresolvedImports,
+        },
+      };
+    }
   }
   return {};
+}
+
+function shadcnAddCommand(pm: PackageManagerName, components: string[]) {
+  const [cmd, dlxArgs] = dlxCommand(pm);
+  return `${cmd} ${[...dlxArgs, SHADCN_PACKAGE, "add", ...components].join(" ")}`;
+}
+
+// What registry items install; other `@/` imports belong to the project and
+// are left to its own build.
+function isRegistryImport(specifier: string): boolean {
+  return (
+    specifier === "@/lib/utils" ||
+    specifier.startsWith("@/components/") ||
+    specifier.startsWith("@/hooks/")
+  );
+}
+
+const RESOLVABLE_SUFFIXES = [
+  "",
+  ".tsx",
+  ".ts",
+  ".jsx",
+  ".js",
+  "/index.tsx",
+  "/index.ts",
+  "/index.jsx",
+  "/index.js",
+];
+
+function isFile(filePath: string): boolean {
+  try {
+    return fs.statSync(filePath).isFile();
+  } catch {
+    return false;
+  }
+}
+
+function readAliasTargets(projectDir: string): string[] {
+  const tsconfigPath = path.join(projectDir, "tsconfig.json");
+  if (!fs.existsSync(tsconfigPath)) return [];
+  const compilerOptions =
+    parseTsConfig(fs.readFileSync(tsconfigPath, "utf-8")).compilerOptions ?? {};
+  const targets = compilerOptions.paths?.["@/*"];
+  if (!Array.isArray(targets)) return [];
+  const baseUrl =
+    typeof compilerOptions.baseUrl === "string" ? compilerOptions.baseUrl : ".";
+  return targets
+    .filter((target): target is string => typeof target === "string")
+    .map((target) => path.join(baseUrl, target));
+}
+
+/**
+ * Lists the imports of registry-installed paths (`@/components/`, `@/hooks/`,
+ * `@/lib/utils`) that resolve to no file through the project's `@/*` path, so
+ * `create` does not report success for a project whose components never
+ * landed where its imports look.
+ */
+export async function findUnresolvedRegistryImports(
+  projectDir: string,
+): Promise<string[]> {
+  const targets = readAliasTargets(projectDir);
+  if (targets.length === 0) return [];
+
+  const resolves = (rest: string) =>
+    targets.some((target) =>
+      RESOLVABLE_SUFFIXES.some((suffix) =>
+        isFile(path.join(projectDir, target.replace("*", rest) + suffix)),
+      ),
+    );
+
+  const parsers = await loadModuleParsers();
+  const unresolved = new Set<string>();
+  for (const { fullPath, content } of readProjectFiles("**/*.{ts,tsx}", {
+    cwd: projectDir,
+    ignore: LOCAL_PROJECT_ARTIFACT_GLOB_IGNORES,
+  })) {
+    if (!content.includes("@/")) continue;
+    const j = fullPath.endsWith(".tsx") ? parsers.tsx : parsers.ts;
+    let root;
+    try {
+      root = j(content);
+    } catch {
+      continue;
+    }
+    forEachModuleSource(j, root, ({ value }) => {
+      if (
+        typeof value === "string" &&
+        isRegistryImport(value) &&
+        !resolves(value.slice("@/".length))
+      ) {
+        unresolved.add(value);
+      }
+    });
+  }
+  return Array.from(unresolved).sort();
 }
 
 function resolveRegistryComponents(
