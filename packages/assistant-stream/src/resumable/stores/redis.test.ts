@@ -20,6 +20,22 @@ it("loads the ioredis major this leg advertises", async () => {
   expect(version.split(".")[0]).toBe(process.env["IOREDIS_PEER_MAJOR"]);
 });
 
+// npm refuses to install assistant-stream next to a redis major the peer
+// range leaves out, so the range must include the major these tests load.
+it("accepts the node-redis major these tests load as a peer", async () => {
+  const [{ version }, { peerDependencies }] = (await Promise.all([
+    import("redis/package.json"),
+    import("../../../package.json"),
+  ])) as unknown as [
+    { version: string },
+    { peerDependencies: { redis: string } },
+  ];
+  const peerMajors = peerDependencies.redis
+    .split("||")
+    .map((range) => range.trim().replace(/^\^/, "").split(".")[0]);
+  expect(peerMajors).toContain(version.split(".")[0]);
+});
+
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 const bytes = (s: string): Uint8Array => enc.encode(s);
